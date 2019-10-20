@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>APP</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/zingtouch/1.0.6/zingtouch.js"></script>
+</head>
+<body>
+
+	<div class="container principal">
+		<h2>SENSOR DATA</h2>
+		<div class="well well-md">
+			<hr>
+			<label>GYRO DATA</label>
+			<label id="roll"></label>
+			<label id="pitch"></label>
+			<label id="yaw"></label>
+			<hr>
+			<label>ACCEL DATA</label>
+			<label id="accelX"></label>
+			<label id="accelY"></label>
+			<label id="accelZ"></label>
+			<hr>
+			<label id="incoming"></label>
+		</div>
+	</div>
+	
+	<script type="text/javascript">
+		$(document).ready(function() {
+			//gyro
+			if (window.DeviceOrientationEvent) {
+			    window.addEventListener('deviceorientation', function(eventData) {
+			        // gamma is the left-to-right tilt in degrees
+			        $("#roll").text("Roll: " + parseFloat(eventData.gamma).toFixed(2))
+			        // beta is the front-to-back tilt in degrees
+			        $("#pitch").text("Pitch: " + parseFloat(eventData.beta).toFixed(2))
+			        // alpha is the compass direction the device is facing in degrees
+			        $("#yaw").text("Yaw: " + parseFloat(eventData.alpha).toFixed(2))
+			    }, false);
+			}
+
+			if (window.DeviceMotionEvent) {
+			    window.addEventListener('devicemotion', function(eventData) {   
+			        // Acceleration
+			        $("#accelX").text("AccelX: " + parseFloat(eventData.accelerationIncludingGravity.x).toFixed(2))
+			        $("#accelY").text("AccelX: " + parseFloat(eventData.accelerationIncludingGravity.y).toFixed(2))
+			        $("#accelZ").text("AccelX: " + parseFloat(eventData.accelerationIncludingGravity.z).toFixed(2))
+			    }, false);
+			}
+
+			function request() {
+				$.get('/phone?gyroX='+$("#roll").text()+'&gyroY='+$("#pitch").text()+'&gyroZ='+$("#yaw").text(), function(txt){
+					$("#incoming").text(JSON.stringify(txt))
+				});
+			}
+			setInterval(request, 1000);
+		});
+	</script>
+
+	
+
+</body>
+</html>
