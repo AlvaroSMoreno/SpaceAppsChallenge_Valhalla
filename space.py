@@ -246,7 +246,6 @@ screen.onkeypress(thrust, "w")
 
 while True:
 	if tomar:
-		win()
 		move_asteroids(asteroid0)
 		move_asteroids(asteroid1)
 		move_asteroids(asteroid2)
