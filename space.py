@@ -43,7 +43,7 @@ sun.speed(0)
 sun.shape(file3)
 sun.penup()
 sun.goto(width/2 - 50, height/2 - 50)
-#SCORE
+#SCORE [][][][][][][][][][][][][][][] 
 score = turtle.Turtle()
 score.speed(0)
 score.shape('square')
@@ -58,10 +58,13 @@ ship = turtle.Turtle()
 ship.speed(0)
 ship.penup()
 ship.shape(filename)
+#ship.shape('square')
+ship.color('green')
 ship.goto(-width/2 + 50,0)
 ship.accel = 2
 ship.step = 20
 ship.d = 1000
+ship.rot = 10
 #Asteroide 0
 asteroid0 = turtle.Turtle()
 asteroid0.speed(0)
@@ -72,7 +75,7 @@ asteroid0.x = asteroid0.r
 asteroid0.y = 0
 asteroid0.goto(asteroid0.x,asteroid0.y)
 asteroid0.vel = -1
-asteroid0.delta = 5
+asteroid0.delta = 10
 #Asteroide 1
 asteroid1 = turtle.Turtle()
 asteroid1.speed(0)
@@ -83,7 +86,7 @@ asteroid1.x = -asteroid1.r
 asteroid1.y = 0
 asteroid1.goto(asteroid1.x,asteroid1.y)
 asteroid1.vel = 1
-asteroid1.delta = 10
+asteroid1.delta = 5
 #Asteroide 2
 asteroid2 = turtle.Turtle()
 asteroid2.speed(0)
@@ -94,7 +97,7 @@ asteroid2.x = 0
 asteroid2.y = asteroid2.r
 asteroid2.goto(asteroid2.x,asteroid2.y)
 asteroid2.vel = 1
-asteroid2.delta = 5
+asteroid2.delta = 1
 
 def create_garbage(x, y):
 	if len(garbage_arr) < max_garbage:
@@ -141,7 +144,7 @@ def check_garbage(arr):
 					arr.pop()
 					score.clear()
 					score.goto(100-width/4,0)
-					score.write("NIVEL {}".format(math.ceil(points/5)+1), font=('Courier', 42, 'bold'))
+					score.write("LEVEL {}".format(math.ceil(points/5)+1), font=('Courier', 42, 'bold'))
 					playsound('bip2.wav')
 					time.sleep(1.5)
 
@@ -170,6 +173,13 @@ def up():
 		ship.sety(ship.ycor()+ship.step)
 		gas -= 1
 
+def thrust():
+	global gas
+	if gas > 0:
+		ship.accel = 1
+		ship.forward(ship.step)
+		gas -= 1
+
 def down():
 	global gas
 	if gas > 0:
@@ -191,17 +201,31 @@ def left():
 		ship.setx(ship.xcor()-ship.step)
 		gas -= 1
 
-def gameover():
+def gameover(v):
 	score.clear()
-	score.goto(150-width/3,0)
-	score.write("GAME OVER", font=('Courier', 50, 'bold'))
-	time.sleep(2)
+	score.goto(50-width/3,-50)
+	score.write("GAME OVER\n{}".format(v), font=('Courier', 50, 'bold'))
+	time.sleep(3)
 	sys.exit()
+
+def rotR():
+	angle = ship.heading()
+	#print(angle)
+	ship.ht()
+	ship.setheading(angle+ship.rot)
+	ship.st()
+
+def rotL():
+	angle = ship.heading()
+	#print(angle)
+	ship.ht()
+	ship.setheading(angle-ship.rot)
+	ship.st()
 
 def win():
 	score.clear()
-	score.goto(25-width/3,0)
-	score.write("YOU WON\nNASA is very thankful\nfor your services!!!", font=('Courier', 38, 'bold'))
+	score.goto(25-width/3,height/4 - 250)
+	score.write("The estimated population of\nparticles between 1 to 10 cm\nareapproximately 500,000\nNASA is very thankful\nfor your services!!!", font=('Courier', 30, 'bold'))
 	playsound('win.wav')
 	time.sleep(5)
 	sys.exit()
@@ -216,28 +240,34 @@ screen.onkeypress(down, 'Down')
 screen.onkeypress(right, 'Right')
 screen.onkeypress(left, 'Left')
 screen.onkeypress(init, 'space')
+screen.onkeypress(rotR, "a")
+screen.onkeypress(rotL, "d")
+screen.onkeypress(thrust, "w")
 
 while True:
 	if tomar:
+		win()
 		move_asteroids(asteroid0)
 		move_asteroids(asteroid1)
 		move_asteroids(asteroid2)
 		#Colisiones con los asteroides
+		arr = ['Calipso', 'Cloudsat', 'Glory']
+		num = random.randint(0,2)
 		if ship.xcor() > asteroid1.xcor()-8 and ship.xcor() < asteroid1.xcor()+8:
 			if ship.ycor() > asteroid1.ycor()-8 and ship.ycor() < asteroid1.ycor()+8:
 				#choco con asteroide1
-				gameover()
+				gameover("You crashed with\n" + arr[num])
 		if ship.xcor() > asteroid2.xcor()-8 and ship.xcor() < asteroid2.xcor()+8:
 			if ship.ycor() > asteroid2.ycor()-8 and ship.ycor() < asteroid2.ycor()+8:
 				#choco con asteroide2
-				gameover()
+				gameover("You crashed with\n" + arr[num])
 		if ship.xcor() > asteroid0.xcor()-8 and ship.xcor() < asteroid0.xcor()+8:
 			if ship.ycor() > asteroid0.ycor()-8 and ship.ycor() < asteroid0.ycor()+8:
 				#choco con asteroide0
-				gameover()
+				gameover("You crashed with\n" + arr[num])
 		#Colision con el planeta
 		if ship.d < 85: #choco
-			gameover()
+			gameover("")
 		x = random.randint(0,width/2 - 30)
 		y = random.randint(0,height/2 -30)
 		prob = random.randint(0,100)
@@ -253,7 +283,7 @@ while True:
 		dist_sun = math.ceil(math.sqrt((sun.xcor()-ship.xcor())**2 + (sun.ycor()-ship.ycor())**2)/ship.step)-5
 		#solar panel
 		if dist_sun <= 2:
-			gameover()
+			gameover("")
 		elif dist_sun <= 4:
 			score.color('dark orange')
 			if gas < gas_limit:
@@ -268,10 +298,13 @@ while True:
 			score.color('white')
 		#collect garbage
 		check_garbage(garbage_arr)
+		gas_to_rect = ""
+		for x in range(0,gas,50):
+			gas_to_rect = gas_to_rect + "[]"
 		gravity()
 		score.clear()
 		score.goto(-width/2+5,height/2 - 75)
-		marcador = "Debris Collection: {} \nEnergy: {} \nTrip to Sun: {}".format(points, gas, dist_sun)
+		marcador = "Debris Collection: {} \nEnergy: {} \nTrip to Sun: {}".format(points, gas_to_rect, dist_sun)
 		score.write(marcador, font=('Courier', 15, 'bold'))
 	else:
 		score.clear()
