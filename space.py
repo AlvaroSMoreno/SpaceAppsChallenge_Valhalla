@@ -15,10 +15,10 @@ max_garbage = 15
 size = 5
 k = 35
 garbage_arr = []
-filename = 'tomar.gif'
-file2 = 'earth.gif'
-file3 = 'sun.gif'
-file4 = 'sat1.gif'
+filename = 'res/tomar.gif'
+file2 = 'res/earth.gif'
+file3 = 'res/sun.gif'
+file4 = 'res/sat1.gif'
 dist_sun = 1000
 tomar = False
 
@@ -57,8 +57,8 @@ score.write(marcador, font=('Courier', 15, 'bold'))
 ship = turtle.Turtle()
 ship.speed(0)
 ship.penup()
-ship.shape(filename)
-#ship.shape('square')
+#ship.shape(filename)
+ship.shape('square')
 ship.color('green')
 ship.goto(-width/2 + 50,0)
 ship.accel = 2
@@ -145,7 +145,7 @@ def check_garbage(arr):
 					score.clear()
 					score.goto(100-width/4,0)
 					score.write("LEVEL {}".format(math.ceil(points/5)+1), font=('Courier', 42, 'bold'))
-					playsound('bip2.wav')
+					playsound('res/bip2.wav')
 					time.sleep(1.5)
 
 def move_trash(arr):
@@ -226,7 +226,7 @@ def win():
 	score.clear()
 	score.goto(25-width/3,height/4 - 250)
 	score.write("The estimated population of\nparticles between 1 to 10 cm\nareapproximately 500,000\nNASA is very thankful\nfor your services!!!", font=('Courier', 30, 'bold'))
-	playsound('win.wav')
+	playsound('res/win.wav')
 	time.sleep(5)
 	sys.exit()
 
