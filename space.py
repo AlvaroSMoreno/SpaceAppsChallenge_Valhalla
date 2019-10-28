@@ -4,6 +4,12 @@ import random
 import math
 import sys
 from playsound import playsound
+import os
+
+def resolver_ruta(ruta_relativa):
+	if hasattr(sys, '_MEIPASS'):
+		return os.path.join(sys._MEIPASS, ruta_relativa)
+	return os.path.join(os.path.abspath('.'), ruta_relativa)
 
 width = 1000
 height = 600
@@ -14,11 +20,12 @@ max_dist = math.sqrt((width/2 * width/2) + (height/2 * height/2))
 max_garbage = 15
 size = 5
 k = 35
+counter_sun = 0
 garbage_arr = []
-filename = 'res/tomar.gif'
-file2 = 'res/earth.gif'
-file3 = 'res/sun.gif'
-file4 = 'res/sat1.gif'
+filename = resolver_ruta('res/tomar.gif')
+file2 = resolver_ruta('res/earth.gif')
+file3 = resolver_ruta('res/sun.gif')
+file4 = resolver_ruta('res/sat1.gif')
 dist_sun = 1000
 tomar = False
 
@@ -57,8 +64,8 @@ score.write(marcador, font=('Courier', 15, 'bold'))
 ship = turtle.Turtle()
 ship.speed(0)
 ship.penup()
-#ship.shape(filename)
-ship.shape('square')
+ship.shape(filename)
+#ship.shape('square')
 ship.color('green')
 ship.goto(-width/2 + 50,0)
 ship.accel = 2
@@ -145,7 +152,7 @@ def check_garbage(arr):
 					score.clear()
 					score.goto(100-width/4,0)
 					score.write("LEVEL {}".format(math.ceil(points/5)+1), font=('Courier', 42, 'bold'))
-					playsound('res/bip2.wav')
+					playsound(resolver_ruta('res/bip2.wav'))
 					time.sleep(1.5)
 
 def move_trash(arr):
@@ -226,7 +233,7 @@ def win():
 	score.clear()
 	score.goto(25-width/3,height/4 - 250)
 	score.write("The estimated population of\nparticles between 1 to 10 cm\nareapproximately 500,000\nNASA is very thankful\nfor your services!!!", font=('Courier', 30, 'bold'))
-	playsound('res/win.wav')
+	playsound(resolver_ruta('res/win.wav'))
 	time.sleep(5)
 	sys.exit()
 
@@ -283,17 +290,23 @@ while True:
 		#solar panel
 		if dist_sun <= 2:
 			gameover("")
+		elif counter_sun >= 100:
+			gameover("")
 		elif dist_sun <= 4:
 			score.color('dark orange')
+			counter_sun += 2
 			if gas < gas_limit:
 				gas += 3
 		elif dist_sun <= 7:
+			counter_sun += 1
 			score.color('forest green')
 			if gas < gas_limit:
 				gas += 1
 		elif gas < 50:
+			counter_sun = 0
 			score.color('red')
 		else:
+			counter_sun = 0
 			score.color('white')
 		#collect garbage
 		check_garbage(garbage_arr)
